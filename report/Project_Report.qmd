@@ -1,15 +1,47 @@
- ---
- title: "Tabernanthalog (TBG) Scientific Audit & Visual Makeover"
- subtitle: "A Reproducible Analysis of David E. Olson Lab's 2021 Nature
-      Publication"
- author: "Isaac McGinn"
- institution: "University of California, Davis"
- date: today
- format:
-   html:
-     toc: true
-     toc-depth: 3
-     code-fold: show
-     theme: cosmo
-     highlight-style: github
 ---
+title: "Tabernanthalog (TBG) Audit & Visual Makeover"
+subtitle: "A Reproducible Analysis of David E. Olson Lab's 2021 Nature
+      Publication"
+author: "Isaac McGinn"
+institution: "University of California Davis"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    theme: cosmo
+    highlight-style: github
+---
+## 1. Introduction & Biological Question
+
+Serotonergic psychedelics such as psilocybin, LSD, and **ibogaine** have proven to be profoundly effective in treating neuropsychiatric disorders, including substance use disorders. However, their therapeutic use is limited by their intense hallucinogenic side effects and, in the case of ibogaine, the risk of fatal cardiac arrhythmias through inhibition of the hERG potassium channel.
+
+In order to overcome these barriers, the Olson Lab at the University of California, Davis developed **tabernanthalog (TBG)**, a water-soluble, non-hallucinogenic, and non-toxic analogue of ibogaine. TBG retains the neural plasticity properties of ibogaine while eliminating hallucinogenic effects and cardiac toxicity (Cameron et al., 2021).
+      
+In this computational reanalysis and visual redesign, I utilize raw, unpolished behavioral data deposited on Figshare (ID: 11634795) from the seminal publication:
+      
+ > Cameron, L.P., Tombari, R.J., Lu, J. *et al.* A non-hallucinogenic
+      psychedelic analogue with therapeutic potential. *Nature* **589**,
+      474–479 (2021).  [https://doi.org/10.1038/s41586-020-3008-z](https://doi.org/10.1038/s4158
+  6-020-3008-z)
+      
+My primary objective is to audit Figure 4e of this study, verifying whether a single administration of TBG (10 mg/kg) significantly reduces daily alcohol consumption in mice over a multi-day binge-drinking timeline, and to replace the original "dynamite plots" with a modern, high-density visualization that reveals individual biological trajectories.
+
+## Raw Data Import
+```{r}
+#load packages
+library(tidyverse)
+library(pzfx)
+library(here)
+#import raw data using 'here()' to find project root
+raw_data <- read_pzfx(
+  here("data/raw/extracted/Final Data for Publication/Fig 4e_Alcohol over time copy.pzfx"),
+  table = "Data 1"
+)
+#print raw dim to verify import
+dim(raw_data)
+```
+
+
+
