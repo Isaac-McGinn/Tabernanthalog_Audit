@@ -42,10 +42,112 @@ raw_data <- read_pzfx(
 #print raw dim to verify import
 dim(raw_data)
 ```
-## Tidying Data
+## Wrangle Data
 ```{r}
-
+#preview raw_data 
+glimpse(raw_data)
+#tidy based on observations
+tidy_data <- raw_data |> 
+  pivot_longer(
+    cols = -ROWTITLE,
+    names_to = "mice_replicates",
+    values_to = "alcohol_intake"
+  ) |> 
+  rename(day = ROWTITLE) |> 
+  separate_wider_delim(
+    cols = mice_replicates,
+    delim = "_",
+    names = c("treatment", "mouse_id")
+  ) |> 
+  mutate(
+    treatment = as.factor(treatment),
+    mouse_id = as.integer(mouse_id)
+  )
+#check to see that changes were made
+print(tidy_data)
+```
+## Replication of Fig.e: Alcohol Intake Over Time 
+```{r}
+#group and summarize data 
+summary_data <- tidy_data |> 
+  group_by(day, treatment) |> 
+  summarise(
+    mean_intake = mean(alcohol_intake),
+    sd_intake = sd(alcohol_intake),
+    n = n(),
+    sem_intake = sd_intake / sqrt(n)
+  ) |> 
+  ungroup()
+#check changes 
+print(summary_data)
+#- changes made
+#replicate figure using summary_data 
+replication_plot <- ggplot(
+  summary_data,
+  aes(
+      x = as.factor(day),
+      y = mean_intake,
+      group = treatment,
+      fill = treatment,
+      color = treatment
+  )
+) +
+  #treatment lines
+  geom_line(
+    position = position_dodge(.2),
+    linewidth = 1 
+  ) +
+  #SEM error bars
+  geom_errorbar(
+    aes(
+      ymin = mean_intake - sem_intake,
+      ymax = mean_intake + sem_intake
+    ),
+    width = .1,
+    position = position_dodge(.2),
+    linewidth = .8
+  ) + 
+  #filled points
+  geom_point(
+    shape = 21,
+    size = 4,
+    color = "black",
+    stroke = 1,
+    position = position_dodge(.2)
+  ) +
+  #color mapping 
+  scale_fill_manual(values = c("VEH" = "white",
+                               "TBG" = "steelblue")) +
+  scale_color_manual(values = c("VEH" = "black",
+                                "TBG" = "steelblue")) +
+  #zooming without cut off error bars 
+  coord_cartesian(
+    ylim = c(0, 15)) +
+  scale_y_continuous(
+    breaks = seq(0, 15, 5)) +
+  #labels 
+  labs(
+    x = "Days",
+    y = "Alcohol Intake (g/kg/day)",
+    title = "Recreation of Figure 4e"
+  ) +
+  theme_classic()
+#display plot 
+print(replication_plot)
 ```
 
+
+
+## Statistical Audit 
+```{r}
+#fit 2-way ANOVA test 
+anova_model <- aov(
+  alcohol_intake ~ treatment * as.factor(day) +
+Error(as.factor(mouse_id)),
+  data = tidy_data 
+  )
+#print model
+summary(anova_model)
+```
 
 
