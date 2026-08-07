@@ -120,6 +120,15 @@ replication_plot <- ggplot(
                                "TBG" = "steelblue")) +
   scale_color_manual(values = c("VEH" = "black",
                                 "TBG" = "steelblue")) +
+  #add signif * (assumed signif at this point)
+  annotate(
+    geom = "text",
+    x = c(1, 2),
+    y = c(12.5, 13.5),
+    label = c("**", "*"),
+    size = 6,
+    color = "black"
+  ) +
   #zooming without cut off error bars 
   coord_cartesian(
     ylim = c(0, 15)) +
@@ -132,11 +141,15 @@ replication_plot <- ggplot(
     title = "Recreation of Figure 4e"
   ) +
   theme_classic()
-#display plot 
-print(replication_plot)
 ```
-
-
+::: {layout-ncol=2}
+    ![Original Published Figure 4e (Cameron et al.,
+     2021)](./published_figure_4e.png){width=100%}
+   
+    ```{r show-replication, echo=FALSE, fig.width=5, fig.height=5}
+    # Render our replicated version of Figure 4e
+    print(replication_plot)
+```
 
 ## Statistical Audit 
 ```{r}
