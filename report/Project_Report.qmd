@@ -42,6 +42,10 @@ raw_data <- read_pzfx(
 #print raw dim to verify import
 dim(raw_data)
 ```
+## Tidying Data
+```{r}
+
+```
 
 
 
