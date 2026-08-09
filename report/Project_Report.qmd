@@ -26,7 +26,7 @@ In this computational reanalysis and visual redesign, I utilize raw, unpolished 
       474–479 (2021).  [https://doi.org/10.1038/s41586-020-3008-z](https://doi.org/10.1038/s4158
   6-020-3008-z)
 
-My main objective here is to audit figure 4e (Alcohol Intake Over Time), verifying whether a single administration of TBG (10 mg/kg) significantly reduces daily alcohol consumption in mice across multiple days. Additionally, I aim to replicate the published figure and attempt to improve clarity by replacing the original **dynamite plot** a with high-density visualization that reveal the underlying variability between mice. 
+My main objective is to audit figure 4e (Alcohol Intake Over Time), verifying whether a single administration of TBG (10 mg/kg) significantly reduces daily alcohol consumption in mice across multiple days. Additionally, I aim to replicate the published figure and attempt to improve clarity by replacing the original **dynamite plot** a with high-density visualization that reveals the underlying variability between mice. 
 
 ## Raw Data Import
 First, I loaded the packages I needed throughout this project. Not all packages contained within `tidyverse` were used; I loaded the entire package out of convenience. I used `here()` to ensure the file path constructed would be located correctly regardless of the working directory or machine in use. The imported object was named `raw_data` and `dim()` was used to confirm the success of import. 
@@ -83,7 +83,7 @@ print(tidy_data)
 ```
 
 ## Replication of Fig.4e: Alcohol Intake Over Time 
-Before graphing I needed to perform some temporary transformations on `tidy_data` in order to replicate the exact coordinates and error values used in the published figure. I chose to include this step here rather than in the 'Wrangle Data' section, since the transformations made here are not reused elsewhere. The published figure has an X-axis divided into three days, color representing treatment, and alcohol intake on the Y-axis, so I used `group_by()` on 'day' and 'treatment', and `mean()` to calculate the Y-axis values. The next two steps; `sd()` and `n()` were needed to calculate **Standard Error of the Mean** (SEM) used for error bars. Finally, I used `ungroup()` to ensure these grouped changes did not persist into later steps. 
+Before graphing I needed to perform some temporary transformations on `tidy_data` in order to replicate the exact coordinates and error values used in the published figure. I chose to include this step here rather than in the 'Wrangle Data' section, since the transformations made are not reused elsewhere. The published figure has an X-axis divided into three days, color representing treatment, and alcohol intake on the Y-axis, so I used `group_by()` on 'day' and 'treatment', and `mean()` to calculate the Y-axis values. The next two steps; `sd()` and `n()` were needed to calculate **Standard Error of the Mean** (SEM) used for error bars. Finally, I used `ungroup()` to ensure these grouped changes did not persist into later steps. 
 
 The figure itself is not complex, but much iteration was required to replicate the exact conventions used in the original. I used `as.factor()` every time `day` was referenced in order to maintain even spacing between days on the X-axis as seen in the published figure. Within `geom_line` I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping. Later, I also used `annotate()` to add the `*` significance indicators seen in the published figure, despite not yet having confirmed significance myself via ANOVA; all specific position values were estimated visually to approximate their placement in the original. I chose to use `coord_cartesian()` instead of `limits = c(0, 15)` to prevent the silent loss of data points or error bars that fall outside the specified range. Lastly, the labels section was a challenge for me as I have not yet learned how to correctly change text alignment and figure aspect ratio. I acknowledge that the `TBG` error bars are blue in my replication. 
 
@@ -164,8 +164,10 @@ replication_plot <- ggplot(
 #display figure
 print(replication_plot)
 ```
-## Side-By-Side
-
+## Published Figure
+::: {layout-ncol=2}
+![Original](./published_figure_4e.png)
+:::
 ## Statistical Validation 
 I fit a **2-way repeated measures ANOVA (analysis of variance)** here to test the visual suggestion above that; alcohol intake differs significantly by 'treatment', by day, and if the two factors interact (why I use `*` not `+`). `Error(as.factor(mouse_id))` was used to account for the multiple tests preformed each day; this is what makes it a 'repeated measures' ANOVA. ANOVA models don't use a pipe so `data =` is required. 
 
@@ -223,9 +225,31 @@ select(
 ```
 ## Post-Hoc Conclusion 
 Using the conservative post-hoc Tukey HSD test, none of the day-specific treatment comparisons (VEH vs. TBG) reached statistical significance. Day one was closest to reaching significance. 
-Hope is not lost,I will now apply the exact methodology used to determine significance in the publication; **Sidak Multiple Comparisons Test**
-## Improved Figure 
+Hope is not lost, I will now apply the exact methodology used in the publication to determine significance; **Sidak Multiple Comparisons Test**
 
+## Sidak Multiple Comparisons Test 
+Sidak was a new technique to me before starting this project and I cannot say that I fully understand it yet, but since the ANOVA + TukeyHSD workflow was unsuccessful in reproducing the results seen in the publication figure, I attempted to follow their native protocol. I used `emmeans()` which is used to extract estimated marginal means for 'treatment' within each day. I fed in the repeated measures ANOVA from before since, unlike `TukeyHSD()`, 'Sidak' works with repeated measures. Again, `tidy()` converts the results into a readable data frame.
+
+```{r}
+#load emmeans package 
+library(emmeans)
+#extract estimated marginal means from the 2-way repeated ANOVA earlier 
+marginal_means <-  emmeans(
+  anova_model, ~ treatment | day)
+#use Sidak for pairwise comparisons
+sidak_contrasts <- pairs(
+  marginal_means, adjust = "sidak"
+)
+#use tidy and print contrasts 
+tidy(sidak_contrasts) |> 
+  select(
+    contrast, day, estimate, std.error, statistic, p.value
+  )
+```
+## Sidak Conclusion
+This test has proven to reproduce the published figure's pattern exactly. High significance at day 1 (p < .001) and reduced significance on day 2 (p < .05), corresponding to the pattern of convergence between treatments over time seen in the published figure.
+
+## Improved Figure 
 ```{r}
 
 ```
