@@ -1,5 +1,5 @@
 ---
-title: "Tabernanthalog (TBG) Audit & Visual Makeover"
+title: "Figure 4e Audit & Visual Makeover"
 subtitle: "A Reproducible Analysis of David E. Olson Lab's 2021 Nature
       Publication"
 author: "Isaac McGinn"
