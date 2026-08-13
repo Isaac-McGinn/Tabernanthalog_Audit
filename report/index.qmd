@@ -1,5 +1,5 @@
 ---
-title: "Figure 4e Audit & Visual Makeover"
+title: "Figure 4e Audit & Visual Rework"
 subtitle: "A Reproducible Analysis of David E. Olson Lab's 2021 Nature
       Publication"
 author: "Isaac McGinn"
@@ -12,6 +12,18 @@ format:
     code-fold: show
     theme: cosmo
     highlight-style: github
+  pdf:
+    toc: true
+    toc-depth: 3
+    fig-pos: "H"
+    include-in-header:
+      text: |
+        \usepackage{float}
+        \widowpenalty=10000
+        \clubpenalty=10000
+exclude:
+  warning: false
+  message: false
 ---
 ## 1. Introduction & Biological Question
 
