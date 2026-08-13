@@ -21,7 +21,7 @@ format:
         \usepackage{float}
         \widowpenalty=10000
         \clubpenalty=10000
-exclude:
+execute:
   warning: false
   message: false
 ---
@@ -31,17 +31,14 @@ Serotonergic psychedelics such as psilocybin and LSD as well as atypical psyched
 
 In order to overcome these barriers, the Olson Lab at the University of California, Davis developed **tabernanthalog (TBG)**, a water-soluble, non-hallucinogenic, and non-toxic analogue of ibogaine. TBG retains the neural plasticity properties of ibogaine while eliminating hallucinogenic effects and cardiac toxicity (Cameron et al., 2021).
       
-In this computational reanalysis and visual redesign, I utilize raw, unpolished behavioral data deposited on Figshare (ID: 11634795) from the seminal publication:
+In this computational reanalysis and visual redesign, I utilize raw, unpolished behavioral data deposited on Figshare (ID: 11634795) from the publication:
       
- > Cameron, L.P., Tombari, R.J., Lu, J. *et al.* A non-hallucinogenic
-      psychedelic analogue with therapeutic potential. *Nature* **589**,
-      474–479 (2021).  [https://doi.org/10.1038/s41586-020-3008-z](https://doi.org/10.1038/s4158
-  6-020-3008-z)
+ > Cameron, L.P., Tombari, R.J., Lu, J. *et al.* A non-hallucinogenic psychedelic analogue with therapeutic potential. *Nature* **589**, 474–479 (2021). [https://doi.org/10.1038/s41586-020-3008-z](https://doi.org/10.1038/s41586-020-3008-z)
 
-My main objective is to audit figure 4e (Alcohol Intake Over Time), verifying whether a single administration of TBG (10 mg/kg) significantly reduces daily alcohol consumption in mice across multiple days. Additionally, I aim to replicate the published figure and attempt to improve clarity by replacing the original **dynamite plot** a with high-density visualization that reveals the underlying variability between mice. 
+My main objective is to audit figure 4e (Alcohol Intake Over Time), verifying whether a single administration of TBG (10 mg/kg) significantly reduces daily alcohol consumption in mice across multiple days. Additionally, I aim to replicate the published figure and attempt to improve clarity by replacing the original **dynamite plot** with a high-density visualization that reveals the underlying variability between mice. 
 
 ## Raw Data Import
-First, I loaded the packages I needed throughout this project. Not all packages contained within `tidyverse` were used; I loaded the entire package out of convenience. I used `here()` to ensure the file path constructed would be located correctly regardless of the working directory or machine in use. The imported object was named `raw_data` and `dim()` was used to confirm the success of import. 
+First, I loaded the packages I needed throughout this project. Not all packages contained within `tidyverse` were used; I loaded the entire package out of convenience. I used `here()` to ensure the file path constructed would be located correctly regardless of the working directory or machine in use. The imported object was named `raw_data` and `dim()` was used to confirm the success of import.  
 
 ```{r}
 #load packages
@@ -58,7 +55,7 @@ dim(raw_data)
 #- 3 rows, 39 columns
 ```
 ## Wrangle Data
-Once the data was imported, the next step was tidying and transforming, which I labeled as 'Wrangle Data' since there was not enough transforming required to create a dedicated section. I started previewing with `glimpse()` and found that the data frame was very wide, all value assignments were `<dbl>`, the `ROWTITLE` column contained time points, and there were no `NA` values; making tidying simple. To adjust the data frame to the tidy (long) format I used `pivot_longer` and set new column names. Since the later 2-way ANOVA requires 3 distinct variables, I used `separate_wider_delim()` to isolate `VEH` and `TBG` as the `treatment` variable and the number (1-19) as the `mouse_id` variable. This step was kept separate within the pipe to avoid mistakes that may occur when attempting to lengthen data and split a string in the same step. The only transformation required was the last `mutate()` step where I set `treatment` to be a factor since that's what the ANOVA test works with. I set 'mouse_id" as an integer since that automatically sorts by numerical order and because `<int>` excludes erroneous characters I might have missed that would cause errors later in the 2-way ANOVA. 
+Once the data was imported, the next step was tidying and transforming, which I labeled as 'Wrangle Data' since there was not enough transforming required to create a dedicated section. I started previewing with `glimpse()` and found that the data frame was very wide, all value assignments were `<dbl>`, the `ROWTITLE` column contained time points, and there were no `NA` values, making tidying simple. To adjust the data frame to the tidy (long) format I used `pivot_longer()` and set new column names. Since the later 2-way ANOVA requires three distinct variables, I used `separate_wider_delim()` to isolate `VEH` and `TBG` as the `treatment` variable and the number (1-19) as the `mouse_id` variable. This step was kept separate within the pipe to avoid mistakes that may occur when attempting to lengthen data and split a string in the same step. The only transformation required was the last `mutate()` step where I set `treatment` to be a factor since that's what the ANOVA test works with. I set `mouse_id` as an integer since that automatically sorts by numerical order and because `<int>` excludes erroneous characters I might have missed that would cause errors later in the 2-way ANOVA. 
 
 ```{r}
 #preview raw_data 
@@ -96,11 +93,15 @@ head(tidy_data, 5) |>
 ```
 
 ## Replication of Fig.4e: Alcohol Intake Over Time 
-Before graphing I needed to perform some temporary transformations on `tidy_data` in order to replicate the exact coordinates and error values used in the published figure. I chose to include this step here rather than in the 'Wrangle Data' section, since the transformations made are not reused elsewhere. The published figure has an X-axis divided into three days, color representing treatment, and alcohol intake on the Y-axis, so I used `group_by()` on 'day' and 'treatment', and `mean()` to calculate the Y-axis values. The next two steps; `sd()` and `n()` were needed to calculate **Standard Error of the Mean** (SEM) used for error bars. Finally, I used `ungroup()` to ensure these grouped changes did not persist into later steps. 
+Before graphing I needed to perform some temporary transformations on `tidy_data` in order to replicate the exact coordinates and error values used in the published figure. I chose to include this step here rather than in the 'Wrangle Data' section, since the transformations made are not reused elsewhere. The published figure has an X-axis divided into three days, color representing treatment, and alcohol intake on the Y-axis, so I used `group_by()` on `day` and `treatment`, and `mean()` to calculate the Y-axis values. The next two steps; `sd()` and `n()` were needed to calculate **Standard Error of the Mean** (SEM) used for error bars. Finally, I used `ungroup()` to ensure these grouped changes did not persist into later steps. 
 
 The figure itself is not complex, but much iteration was required to replicate the exact conventions used in the original. I used `as.factor()` every time `day` was referenced in order to maintain even spacing between days on the X-axis as seen in the published figure. Within `geom_line` I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping. Later, I also used `annotate()` to add the `*` significance indicators seen in the published figure, despite not yet having confirmed significance myself via ANOVA; all specific position values were estimated visually to approximate their placement in the original. I chose to use `coord_cartesian()` instead of `limits = c(0, 15)` to prevent the silent loss of data points or error bars that fall outside the specified range. Lastly, the labels section was a challenge for me as I have not yet learned how to correctly change text alignment and figure aspect ratio. I acknowledge that the `TBG` error bars are blue in my replication. 
 
 ```{r}
+#| fig-width: 6
+#| fig-height: 4.5
+#| out-width: "80%"
+#| fig-align: "center"
 #group and summarize data 
 summary_data <- tidy_data |> 
   group_by(day, treatment) |> 
@@ -174,15 +175,65 @@ replication_plot <- ggplot(
     title = "Recreation of Figure 4e"
   ) +
   theme_classic()
-#display figure
+```
+
+### Comparison to Published Figure
+
+```{r}
+#| label: check-original-image
+#| echo: false
+# Check original figure asset exists in local directory
+has_original_image <- file.exists("published_figure_4e.png")
+```
+
+```{r}
+#| label: side-by-side-open
+#| echo: false
+#| eval: !expr has_original_image
+#| results: 'asis'
+cat("::: {layout-ncol=2}\n")
+```
+
+```{r}
+#| label: plot-recreation-side
+#| echo: false
+#| eval: !expr has_original_image
+#| fig-width: 6
+#| fig-height: 4.5
 print(replication_plot)
 ```
-## Published Figure
-::: {layout-ncol=2}
-![Original](./published_figure_4e.png)
-:::
+
+```{r}
+#| label: image-original-side
+#| echo: false
+#| eval: !expr has_original_image
+#| results: 'asis'
+cat("![Published Figure 4e (Original)](./published_figure_4e.png)\n")
+cat(":::\n")
+```
+
+```{r}
+#| label: fallback-recreation-plot
+#| echo: false
+#| eval: !expr "!has_original_image"
+#| fig-width: 6
+#| fig-height: 4.5
+#| fig-align: "center"
+print(replication_plot)
+```
+
+```{r}
+#| label: fallback-note
+#| echo: false
+#| eval: !expr "!has_original_image"
+#| results: 'asis'
+cat("\n\n*Note: The original published figure (Fig 4e) is not shown here because the visual asset './published_figure_4e.png' was not found on this machine. To view the side-by-side comparison, place 'published_figure_4e.png' in the same folder as this document and render again.*\n")
+```
+
+{{< pagebreak >}}
+
 ## Statistical Validation 
-I fit a **2-way repeated measures ANOVA (analysis of variance)** here to test the visual suggestion above that; alcohol intake differs significantly by 'treatment', by day, and if the two factors interact (why I use `*` not `+`). `Error(as.factor(mouse_id))` was used to account for the multiple tests preformed each day; this is what makes it a 'repeated measures' ANOVA. ANOVA models don't use a pipe so `data =` is required. 
+I fit a **2-way repeated measures ANOVA (analysis of variance)** here to test the visual suggestion above that alcohol intake differs significantly by 'treatment', by day, and if the two factors interact (why I use `*` not `+`). `Error(as.factor(mouse_id))` was used to account for the multiple tests performed each day; this is what makes it a 'repeated measures' ANOVA. ANOVA models don't use a pipe so `data =` is required. 
 
 ```{r}
 #fit 2-way repeated measures ANOVA test 
@@ -191,7 +242,7 @@ anova_model <- aov(
 Error(as.factor(mouse_id)),
   data = tidy_data 
   )
-#print model
+#print model 
 broom::tidy(anova_model) |>
   knitr::kable(digits = 4, caption = "2-Way Repeated Measures ANOVA")
 ```
@@ -207,7 +258,9 @@ The test above yielded three statistical findings;
 'day' effect is very significant. Regardless of treatment, overall alcohol consumption changed significantly over time.
 The 'treatment' and 'day' interaction is not statistically significant.
 
-The original publication figure shows a convergence between 'treatment' over time, implying that TBG's efficacy fades over time. However, the non-significant interaction term cannot confirm this pattern. This does not yet serve as contradiction to the published figure but warrants the use of a **post-hoc** test to investigate how the authors derived their daily significance markers.
+The original publication figure shows a convergence between 'treatment' over time, implying that TBG's efficacy fades over time. However, the non-significant interaction term cannot confirm this pattern. This does not yet serve as a contradiction to the published figure but warrants the use of a **post-hoc** test to investigate how the authors derived their daily significance markers.
+
+{{< pagebreak >}}
 
 ## Post-Hoc TukeyHSD
 `TukeyHSD()` (Honest Significance Difference) is a standard post-hoc (follow up) test for ANOVA, that corrects for a false positive risk from running multiple pairwise comparisons at once. Because the previous ANOVA's interaction term was not significant I fit a new ANOVA without `Error()`. I used `tidy()` from the `broom` package to convert the `TukeyHSD()` output to a readable data frame. Then, I filtered for the three 'VEH' v.s. 'TBG' comparisons of interest.
@@ -234,15 +287,15 @@ select(
   contrast,
   estimate,
   adj.p.value
-) |> 
+) |>
   knitr::kable(digits = 4, caption = "Tukey HSD: VEH vs. TBG by Day")
 ```
 ## Post-Hoc Conclusion 
-Using the conservative post-hoc Tukey HSD test, none of the day-specific treatment comparisons (VEH vs. TBG) reached statistical significance. Day one was closest to reaching significance. 
-Hope is not lost, I will now apply the exact methodology used in the publication to determine significance; **Sidak Multiple Comparisons Test**
+Using the conservative post-hoc Tukey HSD test, none of the day-specific treatment comparisons (VEH vs. TBG) reached statistical significance. Day 1 was closest to reaching significance. 
+Hope is not lost, I will now apply the exact methodology used in the publication to determine significance: the **Sidak Multiple Comparisons Test**
 
 ## Sidak Multiple Comparisons Test 
-Sidak was a new technique to me before starting this project and I cannot say that I fully understand it yet, but since the ANOVA + TukeyHSD workflow was unsuccessful in reproducing the results seen in the publication figure, I attempted to follow their native protocol. I used `emmeans()` which is used to extract estimated marginal means for 'treatment' within each day. I fed in the repeated measures ANOVA from before since, unlike `TukeyHSD()`, 'Sidak' works with repeated measures. Again, `tidy()` converts the results into a readable data frame.
+Sidak was a new technique to me before starting this project and I cannot say that I fully understand it yet, but since the ANOVA + TukeyHSD workflow was unsuccessful in reproducing the results seen in the publication figure, I attempted to follow their native protocol. I used `emmeans()` which is used to extract estimated marginal means for `treatment` within each day. I fed in the repeated measures ANOVA from before since, unlike `TukeyHSD()`, 'Sidak' works with repeated measures. Again, `tidy()` converts the results into a readable data frame.
 
 ```{r}
 #load emmeans package 
@@ -257,27 +310,28 @@ sidak_contrasts <- pairs(
 #use tidy and print contrasts 
 tidy(sidak_contrasts) |> 
   select(
-    contrast,
-    day,
-    estimate,
-    std.error,
-    statistic,
-    p.value
+    contrast, day, estimate, std.error, statistic, p.value
   ) |>
-    knitr::kable(digits = 4, caption = "Pairwise Treatment Comparisons via Sidak Post-Hoc Test")
+  knitr::kable(digits = 4, caption = "Pairwise Treatment Comparisons via Sidak Post-Hoc Test")
 ```
 ## Sidak Conclusion
 This test has proven to reproduce the published figure's pattern. High significance at day 1 (p < .001) and reduced significance on day 2 (p < .05), corresponding to the pattern of convergence between treatments over time seen in the published figure.
 
 ## Issues With the Published Figure 
-The published figure presents only mean +/- 'SEM' each day, making it a 'dynamite plot'. This format is clean and easily readable, though it hides the underlying individual mouse data points. Readers have no way to tell variance between mice each day. Additionally, the X-axis time scale has even spacing dispute there being more time between day 2 and 5 than day 1 and 2. Finally, information would be lost if the figure were to be printed 'gray-scale' and the colors used are not colorblind friendly. 
+The published figure presents only mean +/- 'SEM' each day, making it a 'dynamite plot'. This format is clean and easily readable, though it hides the underlying individual mouse data points. Readers have no way to tell variance between mice each day. Additionally, the X-axis time scale has even spacing despite there being more time between day 2 and 5 than day 1 and 2. Finally, information would be lost if the figure were to be printed 'gray-scale' and the colors used are not colorblind friendly. 
 
 ## Improved Figure
-In an attempt to address the issues explained above, I plotted each mouse trajectory as thin, semi-transparent lines and points underneath the summary layer data created earlier. I soon realized that overlaying both treatment groups was cluttered and hard to read, so I used `facet_wrap()` to split the data into two figures, grouped by treatment. The issue of even spacing on the X-axis was easily mended by leaving out `as.factor()` from the `day` variable, making the spacing continuous and numeric. Next, color was corrected using the colorblind safe palate `..._color_viridis_d()`. 
+In an attempt to address the issues explained above, I plotted each mouse trajectory as thin, semi-transparent lines and points underneath the summary layer data created earlier. I soon realized that overlaying both treatment groups was cluttered and hard to read, so I used `facet_wrap()` to split the data into two figures, grouped by treatment. The issue of even spacing on the X-axis was easily mended by leaving out `as.factor()` from the `day` variable, making the spacing continuous and numeric. Next, color was corrected using the colorblind-safe palette `scale_color_viridis_d()`. 
 
-Some big trade offs where made by changing the figure like this. I certainly appreciate the choices made for the published figure more now. The main issues with this new plot are the disjointed nature caused by faceting and increased visual noise coming from plotting every mouse trajectory.
+Some big trade-offs were made by changing the figure like this. I certainly appreciate the choices made for the published figure more now. The main issues with this new plot are the disjointed nature caused by faceting and increased visual noise coming from plotting every mouse trajectory.
+
+{{< pagebreak >}}
 
 ```{r}
+#| fig-width: 7
+#| fig-height: 4.8
+#| out-width: "85%"
+#| fig-align: "center"
 improved_plot <- ggplot(
   tidy_data,
   aes(
