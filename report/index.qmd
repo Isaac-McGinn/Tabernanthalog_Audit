@@ -91,7 +91,8 @@ tidy_data <- raw_data |>
     mouse_id = as.integer(mouse_id)
   )
 #check to see that changes were made
-print(tidy_data)
+head(tidy_data, 5) |>
+  knitr::kable(caption = "Wrangled Long-Format (Tidy) Data Preview")
 ```
 
 ## Replication of Fig.4e: Alcohol Intake Over Time 
@@ -191,7 +192,8 @@ Error(as.factor(mouse_id)),
   data = tidy_data 
   )
 #print model
-summary(anova_model)
+broom::tidy(anova_model) |>
+  knitr::kable(digits = 4, caption = "2-Way Repeated Measures ANOVA")
 ```
 ## ANOVA Conclusion
 - 'treatment' -> significant (p < .001, ***): TBG reduced alcohol intake overall.
@@ -232,8 +234,8 @@ select(
   contrast,
   estimate,
   adj.p.value
-)
-  
+) |> 
+  knitr::kable(digits = 4, caption = "Tukey HSD: VEH vs. TBG by Day")
 ```
 ## Post-Hoc Conclusion 
 Using the conservative post-hoc Tukey HSD test, none of the day-specific treatment comparisons (VEH vs. TBG) reached statistical significance. Day one was closest to reaching significance. 
@@ -255,8 +257,14 @@ sidak_contrasts <- pairs(
 #use tidy and print contrasts 
 tidy(sidak_contrasts) |> 
   select(
-    contrast, day, estimate, std.error, statistic, p.value
-  )
+    contrast,
+    day,
+    estimate,
+    std.error,
+    statistic,
+    p.value
+  ) |>
+    knitr::kable(digits = 4, caption = "Pairwise Treatment Comparisons via Sidak Post-Hoc Test")
 ```
 ## Sidak Conclusion
 This test has proven to reproduce the published figure's pattern. High significance at day 1 (p < .001) and reduced significance on day 2 (p < .05), corresponding to the pattern of convergence between treatments over time seen in the published figure.
