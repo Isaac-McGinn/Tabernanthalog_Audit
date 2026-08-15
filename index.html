@@ -95,9 +95,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#replication-of-fig.4e-alcohol-intake-over-time" id="toc-replication-of-fig.4e-alcohol-intake-over-time" class="nav-link" data-scroll-target="#replication-of-fig.4e-alcohol-intake-over-time">Replication of Fig.4e: Alcohol Intake Over Time</a>
   <ul class="collapse">
   <li><a href="#comparison-to-published-figure" id="toc-comparison-to-published-figure" class="nav-link" data-scroll-target="#comparison-to-published-figure">Comparison to Published Figure</a></li>
+  <li><a href="#note" id="toc-note" class="nav-link" data-scroll-target="#note">Note</a></li>
   </ul></li>
-  <li><a href="#note" id="toc-note" class="nav-link" data-scroll-target="#note">Note:</a>
-  <ul class="collapse">
   <li><a href="#statistical-validation" id="toc-statistical-validation" class="nav-link" data-scroll-target="#statistical-validation">Statistical Validation</a></li>
   <li><a href="#anova-conclusion" id="toc-anova-conclusion" class="nav-link" data-scroll-target="#anova-conclusion">ANOVA Conclusion</a></li>
   <li><a href="#post-hoc-tukeyhsd" id="toc-post-hoc-tukeyhsd" class="nav-link" data-scroll-target="#post-hoc-tukeyhsd">Post-Hoc TukeyHSD</a></li>
@@ -106,12 +105,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sidak-conclusion" id="toc-sidak-conclusion" class="nav-link" data-scroll-target="#sidak-conclusion">Sidak Conclusion</a></li>
   <li><a href="#discussion-of-statistical-validation-methods" id="toc-discussion-of-statistical-validation-methods" class="nav-link" data-scroll-target="#discussion-of-statistical-validation-methods">Discussion of Statistical Validation Methods</a></li>
   <li><a href="#issues-with-the-published-figure" id="toc-issues-with-the-published-figure" class="nav-link" data-scroll-target="#issues-with-the-published-figure">Issues With the Published Figure</a></li>
-  <li><a href="#improved-figure" id="toc-improved-figure" class="nav-link" data-scroll-target="#improved-figure">Improved Figure</a></li>
-  </ul></li>
-  <li><a href="#note-1" id="toc-note-1" class="nav-link" data-scroll-target="#note-1">Note:</a>
+  <li><a href="#improved-figure" id="toc-improved-figure" class="nav-link" data-scroll-target="#improved-figure">Improved Figure</a>
   <ul class="collapse">
-  <li><a href="#final-thoughts-and-acknowledgements" id="toc-final-thoughts-and-acknowledgements" class="nav-link" data-scroll-target="#final-thoughts-and-acknowledgements">Final Thoughts and Acknowledgements</a></li>
+  <li><a href="#note-1" id="toc-note-1" class="nav-link" data-scroll-target="#note-1">Note</a></li>
   </ul></li>
+  <li><a href="#final-thoughts-and-acknowledgements" id="toc-final-thoughts-and-acknowledgements" class="nav-link" data-scroll-target="#final-thoughts-and-acknowledgements">Final Thoughts and Acknowledgements</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </div>
@@ -435,11 +433,12 @@ $ TBG_19   &lt;dbl&gt; 1.146953, 4.587814, 11.469530</code></pre>
 </div>
 </div>
 </section>
-</section>
-<section id="note" class="level1">
-<h1>Note:</h1>
+<section id="note" class="level3">
+<h3 class="anchored" data-anchor-id="note">Note</h3>
 <p>Originally, I used <code>position_dodge()</code>, a slight deviation from the published figure, to prevent the error bars from overlapping, but upon later review, I found this edit to mislead viewers into assuming that the displacement corresponded to different measurement times. I received the excellent suggestion to use <code>geom_ribbon()</code> instead of standard error bars to plot variance as a shaded region, avoiding the issue with overlap. In subsequent projects, I will try to incorporate this feature!</p>
 <div style="page-break-after: always;"></div>
+</section>
+</section>
 <section id="statistical-validation" class="level2">
 <h2 class="anchored" data-anchor-id="statistical-validation">Statistical Validation</h2>
 <p>I fit a <strong>2-way repeated measures ANOVA (analysis of variance)</strong> here to test the visual suggestion above that alcohol intake differs significantly by ‘treatment’, by day, and if the two factors interact (why I use <code>*</code> not <code>+</code>). <code>Error(as.factor(mouse_id))</code> was used to account for the multiple tests performed each day; this is what makes it a ‘repeated measures’ ANOVA. ANOVA models don’t use a pipe so <code>data =</code> is required. Note: I used <code>ifelse</code> to force scientific formatting because previous versions displayed ‘treatment’ p value as ‘0.0000’</p>
@@ -788,11 +787,11 @@ $ TBG_19   &lt;dbl&gt; 1.146953, 4.587814, 11.469530</code></pre>
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="note-1" class="level1">
-<h1>Note:</h1>
+<section id="note-1" class="level3">
+<h3 class="anchored" data-anchor-id="note-1">Note</h3>
 <p>Some big trade-offs were made by changing the figure like this. I certainly appreciate the choices made for the published figure more now. The main issues with this new plot are the disjointed nature caused by faceting and increased visual noise coming from plotting every mouse trajectory.</p>
+</section>
+</section>
 <section id="final-thoughts-and-acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="final-thoughts-and-acknowledgements">Final Thoughts and Acknowledgements</h2>
 <p>This project served as a valuable learning experience for me. I have been ‘teaching myself’ (reading books) R, tidyverse workflows, and Quarto for the past few months. I am so thankful for the resources available to me such as the books: (R for Data Science, Fundamentals of Data Visualization, Bioinformatics Data Skills, Envisioning Information, and Storytelling with Data) which I will link below. I started this project without ever having learned of packages like <code>emmeans</code> or the ‘Sidak’ post-hoc test. I thank YouTube for the tutorials needed to work through that. I have a lot more work to do before I can consider myself proficient at R but I am glad to have finished this project, working with real data, as a first ‘proof’ of my learning so far.</p>
@@ -803,7 +802,6 @@ $ TBG_19   &lt;dbl&gt; 1.146953, 4.587814, 11.469530</code></pre>
 <li><a href="https://www.edwardtufte.com/tufte/books_ei">Envisioning Information</a></li>
 <li><a href="https://www.storytellingwithdata.com/books">Storytelling with Data</a></li>
 </ul>
-</section>
 </section>
 
 </main>

@@ -227,7 +227,7 @@ print(replication_plot)
 cat("\n\n*Note: The original published figure (Fig 4e) is not shown here because the visual asset './published_figure_4e.png' was not found on this machine. To view the side-by-side comparison, place 'published_figure_4e.png' in the same folder as this document and render again.*\n")
 ```
 
-# Note:
+### Note
 Originally, I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping, but upon later review, I found this edit to mislead viewers into assuming that the displacement corresponded to different measurement times. I received the excellent suggestion to use `geom_ribbon()` instead of standard error bars to plot variance as a shaded region, avoiding the issue with overlap. In subsequent projects, I will try to incorporate this feature!
 
 {{< pagebreak >}}
@@ -436,7 +436,7 @@ improved_plot <- ggplot(
 print(improved_plot)
 ```
 
-# Note:
+### Note
 Some big trade-offs were made by changing the figure like this. I certainly appreciate the choices made for the published figure more now. The main issues with this new plot are the disjointed nature caused by faceting and increased visual noise coming from plotting every mouse trajectory.
 
 ## Final Thoughts and Acknowledgements 
