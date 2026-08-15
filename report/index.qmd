@@ -93,7 +93,7 @@ head(tidy_data, 5) |>
 ```
 
 ## Replication of Fig.4e: Alcohol Intake Over Time 
-Before graphing I needed to perform some temporary transformations on `tidy_data` in order to replicate the exact coordinates and error values used in the published figure. I chose to include this step here rather than in the 'Wrangle Data' section, since the transformations made are not reused elsewhere. The published figure has an X-axis divided into three days, color representing treatment, and alcohol intake on the Y-axis, so I used `group_by()` on `day` and `treatment`, and `mean()` to calculate the Y-axis values. The next two steps; `sd()` and `n()` were needed to calculate **Standard Error of the Mean** (SEM) used for error bars. Finally, I used `ungroup()` to ensure these grouped changes did not persist into later steps. 
+Before graphing I needed to perform some temporary transformations on `tidy_data` in order to replicate the exact coordinates and error values used in the published figure. I chose to include this step here rather than in the 'Wrangle Data' section, since the transformations made are not reused elsewhere. The published figure has an X-axis divided into three days, color representing treatment, and alcohol intake on the Y-axis, so I used `group_by()` on `day` and `treatment`, and `mean()` to calculate the Y-axis values. The next two steps; `sd()` and `n()` were needed to calculate **Standard Error of the Mean (SEM)** used for error bars. Finally, I used `ungroup()` to ensure these grouped changes did not persist into later steps. 
 
 The figure itself is not complex, but much iteration was required to replicate the exact conventions used in the original. I used `as.factor()` every time `day` was referenced in order to maintain even spacing between days on the X-axis as seen in the published figure. I also used `annotate()` to add the `*` significance indicators seen in the published figure, despite not yet having confirmed significance myself via ANOVA; all specific position values were estimated visually to approximate their placement in the original. I chose to use `coord_cartesian()` instead of `limits = c(0, 15)` to prevent the silent loss of data points or error bars that fall outside the specified range. Lastly, the labels section was a challenge for me as I have not yet learned how to correctly change text alignment and figure aspect ratio. I acknowledge that the `TBG` error bars are blue in my replication. 
 
@@ -227,7 +227,7 @@ print(replication_plot)
 cat("\n\n*Note: The original published figure (Fig 4e) is not shown here because the visual asset './published_figure_4e.png' was not found on this machine. To view the side-by-side comparison, place 'published_figure_4e.png' in the same folder as this document and render again.*\n")
 ```
 
-## Note
+# Note:
 Originally, I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping, but upon later review, I found this edit to mislead viewers into assuming that the displacement corresponded to different measurement times. I received the excellent suggestion to use `geom_ribbon()` instead of standard error bars to plot variance as a shaded region, avoiding the issue with overlap. In subsequent projects, I will try to incorporate this feature!
 
 {{< pagebreak >}}
@@ -322,13 +322,25 @@ tidy(sidak_contrasts) |>
 ## Sidak Conclusion
 This test has proven to reproduce the published figure's pattern. High significance at day 1 (p < .001) and reduced significance on day 2 (p < .05), corresponding to the pattern of convergence between treatments over time seen in the published figure.
 
+##Discussion of Statistical Validation Methods
+**Why might the published figure have used SEM over SD?**
+  SEM gets smaller as sample size increases making SEM error bars more condensed than **Standard Deviation (SD)** error bars. This makes 'dynamite plots' using SEM cleaner and more dramatic.
+**Why do we need statistical validation?**
+  Patterns presented in a plot are not actionable proof of significant effect. Statistical validation tests help to distinguish natural variability from significant changes.
+**What is a 2-way ANOVA, and why did I start by using a repeated measures ANOVA?**
+  A 2-way ANOVA tests independent variables, like 'treatment' and 'day', each significantly effect outcome and if they interact with each other. I used a repeated measures ANOVA because the same mice are measured on multiple days and those measurements are correlated. 
+**What is the role of post-hoc tests like TukeyHSD and Sidak?**
+  An ANOVA tests for significant difference between groups, not which groups differ. Post-hoc tests follow up by making pairwise comparisons and double as a tool to reduce the false positive rate by controlling p values. 
+**What's the difference between TukeyHSD and Sidak, and why do they yield different results?**
+  TukeyHSD corrects corrects for all possible pairwise comparisons across all 6 groups, 15 comparisons total. Sidak, when applied to the desired 'VEH v.s. TBG' comparison each day, corrects for 3 comparisons. Correction penalty scales by the number of comparisons which is why TukeyHSD yielded much more conservative p values compared to Sidak. 
+**Why might the published paper have chosen Sidak over TukeyHSD?**
+  Sidak allows you to restrict post-hoc corrections to only key comparisons, avoiding unnecessary correction penalty inherent to TukeyHSD.  
+  
 ## Issues With the Published Figure 
-The published figure presents only mean +/- 'SEM' each day, making it a 'dynamite plot'. This format is clean and easily readable, though it hides the underlying individual mouse data points. Readers have no way to tell variance between mice each day. Additionally, the X-axis time scale has even spacing despite there being more time between day 2 and 5 than day 1 and 2. Finally, information would be lost if the figure were to be printed 'gray-scale' and the colors used are not colorblind friendly. 
+The published figure presents only mean +/- 'SEM' each day, making it a 'dynamite plot'. This format is clean and easily readable, though it hides the underlying individual mouse data points. Readers have no way to tell variance between mice each day. Additionally, the X-axis time scale has even spacing despite there being more time between day 2 and 5 than day 1 and 2. Finally, the colors used are not colorblind friendly.
 
 ## Improved Figure
 In an attempt to address the issues explained above, I plotted each mouse trajectory as thin, semi-transparent lines and points underneath the summary layer data created earlier. I soon realized that overlaying both treatment groups was cluttered and hard to read, so I used `facet_wrap()` to split the data into two figures, grouped by treatment. The issue of even spacing on the X-axis was easily mended by leaving out `as.factor()` from the `day` variable, making the spacing continuous and numeric. Next, color was corrected using the colorblind-safe palette `scale_color_viridis_d()`. 
-
-Some big trade-offs were made by changing the figure like this. I certainly appreciate the choices made for the published figure more now. The main issues with this new plot are the disjointed nature caused by faceting and increased visual noise coming from plotting every mouse trajectory.
 
 {{< pagebreak >}}
 
@@ -418,7 +430,11 @@ improved_plot <- ggplot(
 #display
 print(improved_plot)
 ```
-## Final Notes and Acknowledgements 
+
+# Note:
+Some big trade-offs were made by changing the figure like this. I certainly appreciate the choices made for the published figure more now. The main issues with this new plot are the disjointed nature caused by faceting and increased visual noise coming from plotting every mouse trajectory.
+
+## Final Thoughts and Acknowledgements 
 This project served as a valuable learning experience for me. I have been 'teaching myself' (reading books) R, tidyverse workflows, and Quarto for the past few months. I am so thankful for the resources available to me such as the books: (R for Data Science, Fundamentals of Data Visualization, Bioinformatics Data Skills, Envisioning Information, and Storytelling with Data) which I will link below. I started this project without ever having learned of packages like `emmeans` or the 'Sidak' post-hoc test. I thank YouTube for the tutorials needed to work through that. I have a lot more work to do before I can consider myself proficient at R but I am glad to have finished this project, working with real data, as a first 'proof' of my learning so far.  
 
 - [R for Data Science](https://r4ds.hadley.nz)
