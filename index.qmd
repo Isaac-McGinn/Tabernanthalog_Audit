@@ -322,19 +322,29 @@ tidy(sidak_contrasts) |>
 ## Sidak Conclusion
 This test has proven to reproduce the published figure's pattern. High significance at day 1 (p < .001) and reduced significance on day 2 (p < .05), corresponding to the pattern of convergence between treatments over time seen in the published figure.
 
-##Discussion of Statistical Validation Methods
+## Discussion of Statistical Validation Methods
 **Why might the published figure have used SEM over SD?**
-  SEM gets smaller as sample size increases making SEM error bars more condensed than **Standard Deviation (SD)** error bars. This makes 'dynamite plots' using SEM cleaner and more dramatic.
+
+-  SEM gets smaller as sample size increases making SEM error bars more condensed than **Standard Deviation (SD)** error bars. This makes 'dynamite plots' using SEM cleaner and more dramatic.
+  
 **Why do we need statistical validation?**
-  Patterns presented in a plot are not actionable proof of significant effect. Statistical validation tests help to distinguish natural variability from significant changes.
+
+-  Patterns presented in a plot are not actionable proof of significant effect. Statistical validation tests help to distinguish natural variability from significant changes.
+  
 **What is a 2-way ANOVA, and why did I start by using a repeated measures ANOVA?**
-  A 2-way ANOVA tests independent variables, like 'treatment' and 'day', each significantly effect outcome and if they interact with each other. I used a repeated measures ANOVA because the same mice are measured on multiple days and those measurements are correlated. 
+
+-  A 2-way ANOVA tests independent variables, like 'treatment' and 'day', each significantly effect outcome and if they interact with each other. I used a repeated measures ANOVA because the same mice are measured on multiple days and those measurements are correlated.
+  
 **What is the role of post-hoc tests like TukeyHSD and Sidak?**
-  An ANOVA tests for significant difference between groups, not which groups differ. Post-hoc tests follow up by making pairwise comparisons and double as a tool to reduce the false positive rate by controlling p values. 
+
+-  An ANOVA tests for significant difference between groups, not which groups differ. Post-hoc tests follow up by making pairwise comparisons and double as a tool to reduce the false positive rate by controlling p values. 
 **What's the difference between TukeyHSD and Sidak, and why do they yield different results?**
-  TukeyHSD corrects corrects for all possible pairwise comparisons across all 6 groups, 15 comparisons total. Sidak, when applied to the desired 'VEH v.s. TBG' comparison each day, corrects for 3 comparisons. Correction penalty scales by the number of comparisons which is why TukeyHSD yielded much more conservative p values compared to Sidak. 
+
+-  TukeyHSD corrects corrects for all possible pairwise comparisons across all 6 groups, 15 comparisons total. Sidak, when applied to the desired 'VEH v.s. TBG' comparison each day, corrects for 3 comparisons. Correction penalty scales by the number of comparisons which is why TukeyHSD yielded much more conservative p values compared to Sidak. 
+  
 **Why might the published paper have chosen Sidak over TukeyHSD?**
-  Sidak allows you to restrict post-hoc corrections to only key comparisons, avoiding unnecessary correction penalty inherent to TukeyHSD.  
+
+-  Sidak allows you to restrict post-hoc corrections to only key comparisons, avoiding unnecessary correction penalty inherent to TukeyHSD.  
   
 ## Issues With the Published Figure 
 The published figure presents only mean +/- 'SEM' each day, making it a 'dynamite plot'. This format is clean and easily readable, though it hides the underlying individual mouse data points. Readers have no way to tell variance between mice each day. Additionally, the X-axis time scale has even spacing despite there being more time between day 2 and 5 than day 1 and 2. Finally, the colors used are not colorblind friendly.
