@@ -88,6 +88,10 @@ The test above yielded three statistical findings:
 
 The original publication figure shows a convergence between 'treatment' over time, implying that TBG's efficacy fades over time. However, the non-significant interaction term cannot confirm this pattern. This does not yet serve as a contradiction to the published figure but warrants the use of a **post-hoc** test to investigate how the authors derived their daily significance markers.
 
+Note: In the tables below, very small p-values (under 0.001) are
+     formatted in scientific notation rather than rounded to 0.0000 to
+     maintain mathematical precision and avoid rounding errors.*
+     
 ### Post-Hoc Tukey HSD Conclusion
 Using the conservative post-hoc Tukey HSD test, none of the day-specific treatment comparisons (VEH vs. TBG) reached statistical significance. Day 1 was closest to reaching significance.
 
@@ -96,12 +100,26 @@ Hope is not lost, I will now apply the exact methodology used in the publication
 ### Sidak Conclusion
 This test has proven to reproduce the published figure's pattern. High significance at day 1 ($p < 0.001$) and reduced significance on day 2 ($p < 0.05$), corresponding to the pattern of convergence between treatments over time seen in the published figure.
 
+##Discussion of Statistical Validation Methods
+**Why might the published figure have used SEM over SD?**
+  SEM gets smaller as sample size increases making SEM error bars more condensed than **Standard Deviation (SD)** error bars. This makes 'dynamite plots' using SEM cleaner and more dramatic.
+**Why do we need statistical validation?**
+  Patterns presented in a plot are not actionable proof of significant effect. Statistical validation tests help to distinguish natural variability from significant changes.
+**What is a 2-way ANOVA, and why did I start by using a repeated measures ANOVA?**
+  A 2-way ANOVA tests independent variables, like 'treatment' and 'day', each significantly effect outcome and if they interact with each other. I used a repeated measures ANOVA because the same mice are measured on multiple days and those measurements are correlated. 
+**What is the role of post-hoc tests like TukeyHSD and Sidak?**
+  An ANOVA tests for significant difference between groups, not which groups differ. Post-hoc tests follow up by making pairwise comparisons and double as a tool to reduce the false positive rate by controlling p values. 
+**What's the difference between TukeyHSD and Sidak, and why do they yield different results?**
+  TukeyHSD corrects corrects for all possible pairwise comparisons across all 6 groups, 15 comparisons total. Sidak, when applied to the desired 'VEH v.s. TBG' comparison each day, corrects for 3 comparisons. Correction penalty scales by the number of comparisons which is why TukeyHSD yielded much more conservative p values compared to Sidak. 
+**Why might the published paper have chosen Sidak over TukeyHSD?**
+  Sidak allows you to restrict post-hoc corrections to only key comparisons, avoiding unnecessary correction penalty inherent to TukeyHSD.  
+  
 ---
 
 ## Issues with the Published Figure & Improved Design
 
 ### Issues With the Published Figure
-The published figure presents only mean +/- 'SEM' each day, making it a 'dynamite plot'. This format is clean and easily readable, though it hides the underlying individual mouse data points. Readers have no way to tell variance between mice each day. Additionally, the X-axis time scale has even spacing despite there being more time between day 2 and 5 than day 1 and 2. Finally, information would be lost if the figure were to be printed 'gray-scale' and the colors used are not colorblind friendly.
+The published figure presents only mean +/- 'SEM' each day, making it a 'dynamite plot'. This format is clean and easily readable, though it hides the underlying individual mouse data points. Readers have no way to tell variance between mice each day. Additionally, the X-axis time scale has even spacing despite there being more time between day 2 and 5 than day 1 and 2. Finally, the colors used are not colorblind friendly.
 
 ### Improved Figure Design
 In an attempt to address the issues explained above, I plotted each mouse trajectory as thin, semi-transparent lines and points underneath the summary layer data created earlier. I soon realized that overlaying both treatment groups was cluttered and hard to read, so I used `facet_wrap()` to split the data into two figures, grouped by treatment. The issue of even spacing on the X-axis was easily mended by leaving out `as.factor()` from the `day` variable, making the spacing continuous and numeric. Next, color was corrected using the colorblind-safe palette `scale_color_viridis_d()`.
