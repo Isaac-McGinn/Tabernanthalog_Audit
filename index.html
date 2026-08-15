@@ -682,26 +682,17 @@ $ TBG_19   &lt;dbl&gt; 1.146953, 4.587814, 11.469530</code></pre>
 <section id="discussion-of-statistical-validation-methods" class="level2">
 <h2 class="anchored" data-anchor-id="discussion-of-statistical-validation-methods">Discussion of Statistical Validation Methods</h2>
 <p><strong>Why might the published figure have used SEM over SD?</strong></p>
-<ul>
-<li>SEM gets smaller as sample size increases making SEM error bars more condensed than <strong>Standard Deviation (SD)</strong> error bars. This makes ‘dynamite plots’ using SEM cleaner and more dramatic.</li>
-</ul>
+<p>SEM gets smaller as sample size increases making SEM error bars more condensed than <strong>Standard Deviation (SD)</strong> error bars. This makes ‘dynamite plots’ using SEM cleaner and more dramatic.</p>
 <p><strong>Why do we need statistical validation?</strong></p>
-<ul>
-<li>Patterns presented in a plot are not actionable proof of significant effect. Statistical validation tests help to distinguish natural variability from significant changes.</li>
-</ul>
+<p>Patterns presented in a plot are not actionable proof of significant effect. Statistical validation tests help to distinguish natural variability from significant changes.</p>
 <p><strong>What is a 2-way ANOVA, and why did I start by using a repeated measures ANOVA?</strong></p>
-<ul>
-<li>A 2-way ANOVA tests independent variables, like ‘treatment’ and ‘day’, each significantly effect outcome and if they interact with each other. I used a repeated measures ANOVA because the same mice are measured on multiple days and those measurements are correlated.</li>
-</ul>
+<p>A 2-way ANOVA tests independent variables, like ‘treatment’ and ‘day’, each significantly effect outcome and if they interact with each other. I used a repeated measures ANOVA because the same mice are measured on multiple days and those measurements are correlated.</p>
 <p><strong>What is the role of post-hoc tests like TukeyHSD and Sidak?</strong></p>
-<ul>
-<li><p>An ANOVA tests for significant difference between groups, not which groups differ. Post-hoc tests follow up by making pairwise comparisons and double as a tool to reduce the false positive rate by controlling p values. <strong>What’s the difference between TukeyHSD and Sidak, and why do they yield different results?</strong></p></li>
-<li><p>TukeyHSD corrects corrects for all possible pairwise comparisons across all 6 groups, 15 comparisons total. Sidak, when applied to the desired ‘VEH v.s. TBG’ comparison each day, corrects for 3 comparisons. Correction penalty scales by the number of comparisons which is why TukeyHSD yielded much more conservative p values compared to Sidak.</p></li>
-</ul>
+<p>An ANOVA tests for significant difference between groups, not which groups differ. Post-hoc tests follow up by making pairwise comparisons and double as a tool to reduce the false positive rate by controlling p values.</p>
+<p><strong>What’s the difference between TukeyHSD and Sidak, and why do they yield different results?</strong></p>
+<p>TukeyHSD corrects corrects for all possible pairwise comparisons across all 6 groups, 15 comparisons total. Sidak, when applied to the desired ‘VEH v.s. TBG’ comparison each day, corrects for 3 comparisons. Correction penalty scales by the number of comparisons which is why TukeyHSD yielded much more conservative p values compared to Sidak.</p>
 <p><strong>Why might the published paper have chosen Sidak over TukeyHSD?</strong></p>
-<ul>
-<li>Sidak allows you to restrict post-hoc corrections to only key comparisons, avoiding unnecessary correction penalty inherent to TukeyHSD.</li>
-</ul>
+<p>Sidak allows you to restrict post-hoc corrections to only key comparisons, avoiding unnecessary correction penalty inherent to TukeyHSD.</p>
 </section>
 <section id="issues-with-the-published-figure" class="level2">
 <h2 class="anchored" data-anchor-id="issues-with-the-published-figure">Issues With the Published Figure</h2>
