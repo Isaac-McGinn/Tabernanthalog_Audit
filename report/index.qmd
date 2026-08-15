@@ -228,12 +228,13 @@ cat("\n\n*Note: The original published figure (Fig 4e) is not shown here because
 ```
 
 ## Note
-Originally I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping, but upon later review I found this edit to mislead viewers into assuming that the displacement corresponded to different measurement times. I received the excellent suggestion to use `geom_ribbon()`, instead of standard error bars, to plot variance as a shaded region, avoiding the issue with overlap. In subsequent projects I will try to incorporate this feature! 
+Originally, I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping, but upon later review, I found this edit to mislead viewers into assuming that the displacement corresponded to different measurement times. I received the excellent suggestion to use `geom_ribbon()` instead of standard error bars to plot variance as a shaded region, avoiding the issue with overlap. In subsequent projects, I will try to incorporate this feature!
 
 {{< pagebreak >}}
 
 ## Statistical Validation 
-I fit a **2-way repeated measures ANOVA (analysis of variance)** here to test the visual suggestion above that alcohol intake differs significantly by 'treatment', by day, and if the two factors interact (why I use `*` not `+`). `Error(as.factor(mouse_id))` was used to account for the multiple tests performed each day; this is what makes it a 'repeated measures' ANOVA. ANOVA models don't use a pipe so `data =` is required. 
+I fit a **2-way repeated measures ANOVA (analysis of variance)** here to test the visual suggestion above that alcohol intake differs significantly by 'treatment', by day, and if the two factors interact (why I use `*` not `+`). `Error(as.factor(mouse_id))` was used to account for the multiple tests performed each day; this is what makes it a 'repeated measures' ANOVA. ANOVA models don't use a pipe so `data =` is required. Note:
+I used `ifelse` to force scientific formatting because previous versions displayed 'treatment' p value as '0.0000'
 
 ```{r}
 #fit 2-way repeated measures ANOVA test 
@@ -244,6 +245,10 @@ Error(as.factor(mouse_id)),
   )
 #print model 
 broom::tidy(anova_model) |>
+#force scientific notation when p value is low to avoid rounding to .0000
+  mutate(p.value = ifelse(p.value < 0.001,
+                          format(p.value, scientific = TRUE, digits = 4),
+                          format(round(p.value, 4), nsmall = 4))) |>
   knitr::kable(digits = 4, caption = "2-Way Repeated Measures ANOVA")
 ```
 ## ANOVA Conclusion
