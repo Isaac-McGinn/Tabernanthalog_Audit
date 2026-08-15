@@ -95,7 +95,7 @@ head(tidy_data, 5) |>
 ## Replication of Fig.4e: Alcohol Intake Over Time 
 Before graphing I needed to perform some temporary transformations on `tidy_data` in order to replicate the exact coordinates and error values used in the published figure. I chose to include this step here rather than in the 'Wrangle Data' section, since the transformations made are not reused elsewhere. The published figure has an X-axis divided into three days, color representing treatment, and alcohol intake on the Y-axis, so I used `group_by()` on `day` and `treatment`, and `mean()` to calculate the Y-axis values. The next two steps; `sd()` and `n()` were needed to calculate **Standard Error of the Mean** (SEM) used for error bars. Finally, I used `ungroup()` to ensure these grouped changes did not persist into later steps. 
 
-The figure itself is not complex, but much iteration was required to replicate the exact conventions used in the original. I used `as.factor()` every time `day` was referenced in order to maintain even spacing between days on the X-axis as seen in the published figure. Within `geom_line` I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping. Later, I also used `annotate()` to add the `*` significance indicators seen in the published figure, despite not yet having confirmed significance myself via ANOVA; all specific position values were estimated visually to approximate their placement in the original. I chose to use `coord_cartesian()` instead of `limits = c(0, 15)` to prevent the silent loss of data points or error bars that fall outside the specified range. Lastly, the labels section was a challenge for me as I have not yet learned how to correctly change text alignment and figure aspect ratio. I acknowledge that the `TBG` error bars are blue in my replication. 
+The figure itself is not complex, but much iteration was required to replicate the exact conventions used in the original. I used `as.factor()` every time `day` was referenced in order to maintain even spacing between days on the X-axis as seen in the published figure. I also used `annotate()` to add the `*` significance indicators seen in the published figure, despite not yet having confirmed significance myself via ANOVA; all specific position values were estimated visually to approximate their placement in the original. I chose to use `coord_cartesian()` instead of `limits = c(0, 15)` to prevent the silent loss of data points or error bars that fall outside the specified range. Lastly, the labels section was a challenge for me as I have not yet learned how to correctly change text alignment and figure aspect ratio. I acknowledge that the `TBG` error bars are blue in my replication. 
 
 ```{r}
 #| fig-width: 6
@@ -128,7 +128,6 @@ replication_plot <- ggplot(
 ) +
 #treatment lines
   geom_line(
-    position = position_dodge(.2),
     linewidth = 1 
   ) +
 #SEM error bars
@@ -138,7 +137,6 @@ replication_plot <- ggplot(
       ymax = mean_intake + sem_intake
     ),
     width = .1,
-    position = position_dodge(.2),
     linewidth = .8
   ) + 
 #filled points
@@ -146,8 +144,7 @@ replication_plot <- ggplot(
     shape = 21,
     size = 4,
     color = "black",
-    stroke = 1,
-    position = position_dodge(.2)
+    stroke = 1
   ) +
 #color mapping 
   scale_fill_manual(values = c("VEH" = "white",
@@ -229,6 +226,9 @@ print(replication_plot)
 #| results: 'asis'
 cat("\n\n*Note: The original published figure (Fig 4e) is not shown here because the visual asset './published_figure_4e.png' was not found on this machine. To view the side-by-side comparison, place 'published_figure_4e.png' in the same folder as this document and render again.*\n")
 ```
+
+## Note
+Originally I used `position_dodge()`, a slight deviation from the published figure, to prevent the error bars from overlapping, but upon later review I found this edit to mislead viewers into assuming that the displacement corresponded to different measurement times. I received the excellent suggestion to use `geom_ribbon()`, instead of standard error bars, to plot variance as a shaded region, avoiding the issue with overlap. In subsequent projects I will try to incorporate this feature! 
 
 {{< pagebreak >}}
 
